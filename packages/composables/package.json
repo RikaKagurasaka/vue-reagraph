@@ -1,0 +1,24 @@
+{
+  "name": "@vue-reagraph/composables",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "dependencies": {
+    "@vueuse/core": "catalog:",
+    "@vueuse/motion": "catalog:",
+    "uuid": "catalog:"
+  },
+  "peerDependencies": {
+    "vue": "catalog:"
+  },
+  "devDependencies": {
+    "@tools/eslint-config": "workspace:",
+    "@tools/ts-config": "workspace:",
+    "@vue-reagraph/styles": "workspace:"
+  },
+  "scripts": {
+    "lint": "eslint",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json,vue}\"",
+    "dev": "tsc -w"
+  }
+}

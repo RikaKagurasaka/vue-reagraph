@@ -1,0 +1,15 @@
+{
+  "name": "@tools/eslint-config",
+  "private": true,
+  "version": "0.1.0",
+  "main": "eslint.config.mjs",
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "eslint": "catalog:",
+    "eslint-plugin-vue": "catalog:",
+    "globals": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  }
+}
+
