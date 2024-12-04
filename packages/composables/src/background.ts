@@ -2,17 +2,38 @@ import { BackgroundGridFunction, presetBackgroundLineGrid } from "@vue-reagraph/
 import { useEventListener } from "@vueuse/core";
 import { useElementStyle } from "@vueuse/motion";
 import { MaybeRef, MaybeRefOrGetter, watch, toValue, ref, inject, Ref } from "vue";
-import { Vec2 } from "./graph";
+import { GraphTransform, screenToGraphPosition, Vec2 } from "./graph";
 import injectKeys from "./injectKeys";
 
 export interface UseBackgroundOptions {
-  graphTransform?: Ref<{ position: [number, number]; scale: number }>;
+  /** The tranlate and scale of the graph view */
+  graphTransform?: Ref<GraphTransform>;
+  /** The function that generates the background style, defaulting to `presetBackgroundLineGrid({})` */
   backgroundGridPreset?: BackgroundGridFunction;
+  /** The element to apply the background style and listen for dragging events */
   backgroundElement: MaybeRef<HTMLElement>;
+  /** Whether to auto bind the background style to the element style. If `false`, you need to manually apply the style to the element, which enables you to modify the style before applying it. */
   backgroundStyleBinding?: MaybeRefOrGetter<boolean>;
+  /** Whether to disable dragging the view. Default is `false`. The `ref` will be returned to allow you to change it later. */
+  disableDragging?: MaybeRefOrGetter<boolean>;
+  /** Whether to disable scaling the view. Default is `false`. The `ref` will be returned to allow you to change it later. */
+  disableScaling?: MaybeRefOrGetter<boolean>;
+  /** The scaling function to apply to the view when scrolling.   */
+  scalingFunction?: (event: WheelEvent, graphTransform: GraphTransform) => GraphTransform;
 }
 
-export function useBackground({ backgroundGridPreset = presetBackgroundLineGrid({}), backgroundElement, backgroundStyleBinding = true, graphTransform = inject(injectKeys.graphTransform) }: UseBackgroundOptions) {
+export function defaultScalingFunction({ factor = 5e-4 }: { factor?: number }) {
+  return function (event: WheelEvent, graphTransform: GraphTransform) {
+    const { deltaY } = event;
+    const scaleUp = Math.exp(deltaY * factor);
+    const origin = screenToGraphPosition([event.offsetX, event.offsetY], graphTransform);
+    const newTranslate = [(graphTransform.position[0] - origin[0]) * scaleUp + origin[0], (graphTransform.position[1] - origin[1]) * scaleUp + origin[1]] as Vec2;
+    const newTransform = { position: newTranslate, scale: scaleUp * graphTransform.scale };
+    return newTransform;
+  };
+}
+
+export function useBackground({ backgroundGridPreset = presetBackgroundLineGrid({}), backgroundElement, backgroundStyleBinding = true, graphTransform = inject(injectKeys.graphTransform), disableDragging = ref(false), disableScaling = ref(false), scalingFunction = defaultScalingFunction({}) }: UseBackgroundOptions) {
   if (!graphTransform?.value) {
     throw new Error("useBackground requires graphTransform to be provided. You should either provide it manually or call `useBackground` inside a component whose parent has `defineGraph` called.");
   }
@@ -29,25 +50,30 @@ export function useBackground({ backgroundGridPreset = presetBackgroundLineGrid(
     { immediate: true }
   );
   const lastMousePosition = ref([0, 0] as Vec2);
-  const disableDragging = ref(false);
   useEventListener(backgroundElement, "mousedown", (event) => {
-    if (event.button === 0 && !disableDragging.value && event.target === toValue(backgroundElement)) {
-      lastMousePosition.value = [event.clientX, event.clientY];
+    if (event.button === 0 && !toValue(disableDragging) && event.target === toValue(backgroundElement)) {
+      lastMousePosition.value = [event.offsetX, event.offsetY];
       isDragging.value = true;
     }
   });
-  useEventListener(window, "mouseup", (event) => {
-    if (event.button === 0 && event.target === toValue(backgroundElement)) {
+  useEventListener(backgroundElement, "mouseup", (event) => {
+    if (event.button === 0) {
       isDragging.value = false;
     }
   });
-  useEventListener(window, "mousemove", (event) => {
-    if (isDragging.value && !disableDragging.value && event.target === toValue(backgroundElement)) {
-      let delta = [event.clientX - lastMousePosition.value[0], event.clientY - lastMousePosition.value[1]];
+  useEventListener(backgroundElement, "mousemove", (event) => {
+    if (isDragging.value && !toValue(disableDragging) && event.target === toValue(backgroundElement)) {
+      let delta = [event.offsetX - lastMousePosition.value[0], event.offsetY - lastMousePosition.value[1]];
       delta = [delta[0] * graphTransform.value.scale, delta[1] * graphTransform.value.scale];
       graphTransform.value.position = [graphTransform.value.position[0] - delta[0], graphTransform.value.position[1] - delta[1]];
-      lastMousePosition.value = [event.clientX, event.clientY];
+      lastMousePosition.value = [event.offsetX, event.offsetY];
     }
   });
-  return { backgroundStyle, isDragging, disableDragging };
+  useEventListener(backgroundElement, "wheel", async (event) => {
+    if (!toValue(disableScaling)) {
+      graphTransform.value = scalingFunction(event, graphTransform.value);
+    }
+  });
+
+  return { backgroundStyle, isDragging, disableDragging, disableScaling };
 }

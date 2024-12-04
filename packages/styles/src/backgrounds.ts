@@ -37,7 +37,7 @@ export function presetBackgroundLineGrid({ cellSize = 50, backgroundColor, color
         backgroundImage: `repeating-linear-gradient(to right, ${toValue(color)} 0px, ${toValue(color)} ${thickness}px, transparent ${thickness}px, transparent ${cellSize_}px), 
         repeating-linear-gradient(to bottom, ${toValue(color)} 0px, ${toValue(color)} ${thickness}px, transparent ${thickness}px, transparent ${cellSize_}px)`,
         backgroundSize: `${cellSize_}px ${cellSize_}px`,
-        backgroundPosition: `${-toValue(transform).position[0] % cellSize_}px ${-toValue(transform).position[1] % cellSize_}px`,
+        backgroundPosition: `${(-toValue(transform).position[0] / toValue(transform).scale) % cellSize_}px ${(-toValue(transform).position[1] / toValue(transform).scale) % cellSize_}px`,
       };
     });
   } as BackgroundGridFunction;
@@ -57,7 +57,7 @@ export function presetBackgroundDotGrid({ cellSize = 50, backgroundColor, color,
         backgroundColor: toValue(backgroundColor),
         backgroundImage: `radial-gradient(circle, ${toValue(color)} ${toValue(radius)}px, transparent ${toValue(radius)}px)`,
         backgroundSize: `${cellSize_}px ${cellSize_}px`,
-        backgroundPosition: `${-toValue(transform).position[0] % cellSize_}px ${-toValue(transform).position[1] % cellSize_}px`,
+        backgroundPosition: `${(-toValue(transform).position[0] / toValue(transform).scale) % cellSize_}px ${(-toValue(transform).position[1] / toValue(transform).scale) % cellSize_}px`,
       };
     });
   };
