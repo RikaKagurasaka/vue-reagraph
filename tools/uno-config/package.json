@@ -1,0 +1,20 @@
+{
+  "name": "@tools/uno-config",
+  "private": true,
+  "version": "0.1.0",
+  "main": "uno.config.js",
+  "types": "uno.config.d.ts",
+  "devDependencies": {
+    "typescript": "catalog:",
+    "unocss": "catalog:",
+    "@tools/ts-config": "workspace:",
+    "@tools/eslint-config": "workspace:"
+  },
+  "peerDependencies": {
+    "vue": "catalog:"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc -b --watch"
+  }
+}

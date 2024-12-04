@@ -1,5 +1,5 @@
 import { BackgroundGridFunction, presetBackgroundLineGrid } from "@vue-reagraph/styles";
-import { useEventListener } from "@vueuse/core";
+import { useCurrentElement, useEventListener } from "@vueuse/core";
 import { useElementStyle } from "@vueuse/motion";
 import { MaybeRef, MaybeRefOrGetter, watch, toValue, ref, inject, Ref } from "vue";
 import { GraphTransform, screenToGraphPosition, Vec2 } from "./graph";
@@ -11,7 +11,7 @@ export interface UseBackgroundOptions {
   /** The function that generates the background style, defaulting to `presetBackgroundLineGrid({})` */
   backgroundGridPreset?: BackgroundGridFunction;
   /** The element to apply the background style and listen for dragging events */
-  backgroundElement: MaybeRef<HTMLElement>;
+  backgroundElement?: MaybeRef<HTMLElement>;
   /** Whether to auto bind the background style to the element style. If `false`, you need to manually apply the style to the element, which enables you to modify the style before applying it. */
   backgroundStyleBinding?: MaybeRefOrGetter<boolean>;
   /** Whether to disable dragging the view. Default is `false`. The `ref` will be returned to allow you to change it later. */
@@ -33,7 +33,7 @@ export function defaultScalingFunction({ factor = 5e-4 }: { factor?: number }) {
   };
 }
 
-export function useBackground({ backgroundGridPreset = presetBackgroundLineGrid({}), backgroundElement, backgroundStyleBinding = true, graphTransform = inject(injectKeys.graphTransform), disableDragging = ref(false), disableScaling = ref(false), scalingFunction = defaultScalingFunction({}) }: UseBackgroundOptions) {
+export function useBackground({ backgroundGridPreset = presetBackgroundLineGrid({}), backgroundElement=useCurrentElement(), backgroundStyleBinding = true, graphTransform = inject(injectKeys.graphTransform), disableDragging = ref(false), disableScaling = ref(false), scalingFunction = defaultScalingFunction({}) }: UseBackgroundOptions) {
   if (!graphTransform?.value) {
     throw new Error("useBackground requires graphTransform to be provided. You should either provide it manually or call `useBackground` inside a component whose parent has `defineGraph` called.");
   }

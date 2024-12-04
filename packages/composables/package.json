@@ -9,12 +9,12 @@
     "uuid": "catalog:"
   },
   "peerDependencies": {
-    "vue": "catalog:"
+    "vue": "catalog:",
+    "@vue-reagraph/styles": "workspace:"
   },
   "devDependencies": {
     "@tools/eslint-config": "workspace:",
-    "@tools/ts-config": "workspace:",
-    "@vue-reagraph/styles": "workspace:"
+    "@tools/ts-config": "workspace:"
   },
   "scripts": {
     "lint": "eslint",

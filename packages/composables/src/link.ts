@@ -1,9 +1,9 @@
 export interface ILink {
-  from: {
+  source: {
     nodeId: string;
     portId: string;
   };
-  to: {
+  target: {
     nodeId: string;
     portId: string;
   };

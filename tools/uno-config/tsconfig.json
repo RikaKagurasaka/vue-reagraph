@@ -1,0 +1,7 @@
+{
+  "extends": "@tools/ts-config/tsconfig.base.json",
+  "include": ["uno.config.ts"],
+  "compilerOptions": {
+    "declaration": true
+  }
+}

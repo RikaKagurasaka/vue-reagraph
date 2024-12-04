@@ -4,16 +4,16 @@ import { ILink } from "./link";
 import injectKeys from "./injectKeys";
 
 export type Vec2 = [number, number];
-export interface UseGraphOptions<TNode extends INode = INode, TLink extends ILink = ILink> {
-  nodes?: Ref<TNode[]>;
-  links?: Ref<TLink[]>;
+export interface UseGraphOptions {
+  nodes?: Ref<INode[]>;
+  links?: Ref<ILink[]>;
 }
 export interface GraphTransform {
   position: Vec2;
   scale: number;
 }
 
-export function defineGraph<TNode extends INode = INode, TLink extends ILink = ILink>({ nodes = ref([]), links = ref([]) }: UseGraphOptions<TNode, TLink>) {
+export function defineGraph({ nodes = ref([]), links = ref([]) }: UseGraphOptions) {
   const transform = ref({ position: [0, 0], scale: 1 } as { position: Vec2; scale: number });
   provide(injectKeys.graphTransform, transform);
   provide(injectKeys.nodes, nodes);
