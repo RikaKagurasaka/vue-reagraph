@@ -1,6 +1,7 @@
 {
   "name": "@tools/uno-config",
   "private": true,
+  "type": "module",
   "version": "0.1.0",
   "main": "uno.config.js",
   "types": "uno.config.d.ts",

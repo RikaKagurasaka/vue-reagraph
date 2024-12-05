@@ -1,5 +1,5 @@
-import { defineConfig, presetIcons, presetUno, transformerDirectives } from "unocss";
-export default defineConfig({
+import { presetIcons, presetUno, transformerDirectives } from "unocss";
+export default {
   presets: [presetUno(), presetIcons()],
   transformers: [transformerDirectives()],
-});
+};

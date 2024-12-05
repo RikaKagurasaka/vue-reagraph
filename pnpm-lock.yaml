@@ -9,6 +9,9 @@ catalogs:
     '@eslint/js':
       specifier: ^9.16.0
       version: 9.16.0
+    '@unocss/reset':
+      specifier: ^0.65.1
+      version: 0.65.1
     '@vitejs/plugin-vue':
       specifier: ^5.2.1
       version: 5.2.1
@@ -83,6 +86,9 @@ importers:
 
   examples:
     dependencies:
+      '@unocss/reset':
+        specifier: 'catalog:'
+        version: 0.65.1
       '@vue-reagraph/components':
         specifier: 'workspace:'
         version: link:../packages/components
@@ -93,12 +99,18 @@ importers:
         specifier: 'catalog:'
         version: 3.5.13(typescript@5.5.4)
     devDependencies:
+      '@tools/uno-config':
+        specifier: 'workspace:'
+        version: link:../tools/uno-config
       '@vitejs/plugin-vue':
         specifier: 'catalog:'
         version: 5.2.1(vite@6.0.2(jiti@2.4.1)(tsx@4.19.2))(vue@3.5.13(typescript@5.5.4))
       typescript:
         specifier: 'catalog:'
         version: 5.5.4
+      unocss:
+        specifier: 'catalog:'
+        version: 0.65.1(postcss@8.4.49)(rollup@4.28.0)(vite@6.0.2(jiti@2.4.1)(tsx@4.19.2))(vue@3.5.13(typescript@5.5.4))
       vite:
         specifier: 'catalog:'
         version: 6.0.2(jiti@2.4.1)(tsx@4.19.2)
@@ -164,12 +176,21 @@ importers:
       '@tools/ts-config':
         specifier: 'workspace:'
         version: link:../../tools/ts-config
+      csstype:
+        specifier: 'catalog:'
+        version: 3.1.3
 
   packages/styles:
     dependencies:
       '@vue-reagraph/composables':
         specifier: 'workspace:'
         version: link:../composables
+      '@vueuse/core':
+        specifier: 'catalog:'
+        version: 12.0.0(typescript@5.6.3)
+      '@vueuse/motion':
+        specifier: 'catalog:'
+        version: 2.2.6(rollup@4.28.0)(vue@3.5.13(typescript@5.6.3))
       vue:
         specifier: 'catalog:'
         version: 3.5.13(typescript@5.6.3)

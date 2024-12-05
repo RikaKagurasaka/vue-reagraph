@@ -9,13 +9,16 @@
     "lint": "eslint --fix"
   },
   "dependencies": {
-    "vue": "catalog:",
+    "@unocss/reset": "catalog:",
+    "@vue-reagraph/components": "workspace:",
     "@vue-reagraph/composables": "workspace:",
-    "@vue-reagraph/components": "workspace:"
+    "vue": "catalog:"
   },
   "devDependencies": {
+    "@tools/uno-config": "workspace:",
     "@vitejs/plugin-vue": "catalog:",
     "typescript": "catalog:",
+    "unocss": "catalog:",
     "vite": "catalog:",
     "vue-tsc": "catalog:"
   }

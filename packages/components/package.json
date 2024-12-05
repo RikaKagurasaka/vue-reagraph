@@ -2,14 +2,13 @@
   "name": "@vue-reagraph/components",
   "version": "0.1.0",
   "type": "module",
-  "module": "dist/index.es.js",
-  "main": "dist/index.cjs.js",
-  "types": "dist/types/index.d.ts",
   "exports": {
-    "types": "./dist/types/index.d.ts",
-    "style": "./dist/index.css",
-    "import": "./dist/index.es.js",
-    "require": "./dist/index.cjs.js"
+    ".": {
+      "import": "./dist/vue-reagraph-components.js",
+      "require": "./dist/vue-reagraph-components.cjs.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./style.css": "./dist/vue-reagraph-components.css"
   },
   "scripts": {
     "dev": "vite build --watch",

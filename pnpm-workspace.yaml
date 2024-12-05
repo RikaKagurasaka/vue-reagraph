@@ -21,3 +21,4 @@ catalog:
   "vite": "^6.0.1"
   "vite-plugin-dts": "^4.3.0"
   "unocss": "^0.65.1"
+  "@unocss/reset": "^0.65.1"

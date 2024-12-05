@@ -1,4 +1,4 @@
-import { BackgroundGridFunction, presetBackgroundLineGrid } from "@vue-reagraph/styles";
+import { BackgroundGridFunction, presetBackgroundLineGrid } from "./styles";
 import { useCurrentElement, useEventListener } from "@vueuse/core";
 import { useElementStyle } from "@vueuse/motion";
 import { MaybeRef, MaybeRefOrGetter, watch, toValue, ref, inject, Ref } from "vue";
@@ -22,7 +22,7 @@ export interface UseBackgroundOptions {
   scalingFunction?: (event: WheelEvent, graphTransform: GraphTransform) => GraphTransform;
 }
 
-export function defaultScalingFunction({ factor = 5e-4 }: { factor?: number }) {
+export function defaultScalingFunction({ factor = 1e-3 }: { factor?: number }) {
   return function (event: WheelEvent, graphTransform: GraphTransform) {
     const { deltaY } = event;
     const scaleUp = Math.exp(deltaY * factor);
@@ -33,7 +33,7 @@ export function defaultScalingFunction({ factor = 5e-4 }: { factor?: number }) {
   };
 }
 
-export function useBackground({ backgroundGridPreset = presetBackgroundLineGrid({}), backgroundElement=useCurrentElement(), backgroundStyleBinding = true, graphTransform = inject(injectKeys.graphTransform), disableDragging = ref(false), disableScaling = ref(false), scalingFunction = defaultScalingFunction({}) }: UseBackgroundOptions) {
+export function useBackground({ backgroundGridPreset = presetBackgroundLineGrid({}), backgroundElement = useCurrentElement(), backgroundStyleBinding = true, graphTransform = inject(injectKeys.graphTransform), disableDragging = ref(false), disableScaling = ref(false), scalingFunction = defaultScalingFunction({}) }: UseBackgroundOptions) {
   if (!graphTransform?.value) {
     throw new Error("useBackground requires graphTransform to be provided. You should either provide it manually or call `useBackground` inside a component whose parent has `defineGraph` called.");
   }

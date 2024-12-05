@@ -1,4 +1,6 @@
 export * from "./graph";
 export * from "./background";
-export * from "@vue-reagraph/styles";
+export * from "./styles";
 export * from "./injectKeys";
+export * from "./node";
+export * from "./port";
