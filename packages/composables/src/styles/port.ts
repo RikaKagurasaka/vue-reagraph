@@ -1,6 +1,7 @@
 import { useCurrentElement } from "@vueuse/core";
 import { useElementStyle } from "@vueuse/motion";
 import { Property } from "csstype";
+import { useLinksManager } from "../link";
 import { computed, CSSProperties, MaybeRefOrGetter, toRef, toValue, watch } from "vue";
 
 export interface UsePortStyleOptions {
@@ -13,9 +14,11 @@ export interface UsePortStyleOptions {
   side?: MaybeRefOrGetter<"left" | "right" | undefined>;
   styleBinding?: MaybeRefOrGetter<boolean>;
   cursor?: MaybeRefOrGetter<Property.Cursor>;
+  invalidCursor?: MaybeRefOrGetter<Property.Cursor>;
 }
 
-export function usePortStyle({ el = useCurrentElement(), size = "8px", color = "#ee0000", borderColor = "#000", borderWidth = "1px", side, styleBinding = true, borderStyle = "solid", cursor = "crosshair" }: UsePortStyleOptions) {
+export function usePortStyle({ el = useCurrentElement(), size = "8px", color = "#ee0000", borderColor = "#000", borderWidth = "1px", side, styleBinding = true, borderStyle = "solid", cursor = "crosshair", invalidCursor = "not-allowed" }: UsePortStyleOptions) {
+  const { isLinkable, isLinking } = useLinksManager();
   const computedStyle = computed(
     () =>
       ({
@@ -29,7 +32,7 @@ export function usePortStyle({ el = useCurrentElement(), size = "8px", color = "
         right: toValue(side) === "right" ? "0" : undefined,
         transform: (toValue(side) === "left" ? "translateX(-50%)" : toValue(side) === "right" ? "translateX(50%)" : undefined) + "translateY(-50%)",
         top: "50%",
-        cursor: toValue(cursor),
+        cursor: toValue(isLinking) && !toValue(isLinkable) ? toValue(invalidCursor) : toValue(cursor),
         position: "absolute",
         borderRadius: "50%",
       }) as CSSProperties

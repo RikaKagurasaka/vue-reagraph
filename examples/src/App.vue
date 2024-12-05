@@ -1,7 +1,18 @@
 <template>
   <div class="wfull hfull overflow-hidden absolute top-0 left-0">
     <GraphBackground />
-    <GraphNode :position="[100, 100]">
+    <GraphLinks />
+    <GraphNode>
+      <template #title>Hello</template>
+      <template #content>
+        <div class="wfull relative">
+          <div class="px-2 py-1">World</div>
+          <GraphPort id="property-out" />
+        </div>
+      </template>
+    </GraphNode>
+
+    <GraphNode>
       <template #title>Hello</template>
       <template #content>
         <div class="wfull relative">
@@ -15,8 +26,7 @@
 
 <script setup lang="ts">
 import { defineGraph } from "@vue-reagraph/composables";
-import { GraphBackground, GraphNode, GraphPort } from "@vue-reagraph/components";
-
+import { GraphBackground, GraphLinks, GraphNode, GraphPort } from "@vue-reagraph/components";
 defineGraph({});
 </script>
 

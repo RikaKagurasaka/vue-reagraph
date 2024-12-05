@@ -64,14 +64,14 @@ export function useBackground({ backgroundGridPreset = presetBackgroundLineGrid(
   useEventListener(backgroundElement, "mousemove", (event) => {
     if (isDragging.value && !toValue(disableDragging) && event.target === toValue(backgroundElement)) {
       let delta = [event.offsetX - lastMousePosition.value[0], event.offsetY - lastMousePosition.value[1]];
-      delta = [delta[0] * graphTransform.value.scale, delta[1] * graphTransform.value.scale];
-      graphTransform.value.position = [graphTransform.value.position[0] - delta[0], graphTransform.value.position[1] - delta[1]];
+      delta = [delta[0] * toValue(graphTransform).scale, delta[1] * toValue(graphTransform).scale];
+      toValue(graphTransform).position = [toValue(graphTransform).position[0] - delta[0], toValue(graphTransform).position[1] - delta[1]];
       lastMousePosition.value = [event.offsetX, event.offsetY];
     }
   });
   useEventListener(backgroundElement, "wheel", async (event) => {
     if (!toValue(disableScaling)) {
-      graphTransform.value = scalingFunction(event, graphTransform.value);
+      graphTransform.value = scalingFunction(event, toValue(graphTransform));
     }
   });
 

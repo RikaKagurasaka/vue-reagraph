@@ -1,24 +1,28 @@
-import { provide, ref, Ref } from "vue";
+import { ref, Ref, UnwrapRef } from "vue";
 import { INode } from "./node";
-import { ILink } from "./link";
+import { ILink, useLinksManager } from "./link";
 import injectKeys from "./injectKeys";
+import { provideLocal } from "@vueuse/core";
 
 export type Vec2 = [number, number];
 export interface UseGraphOptions {
-  nodes?: Ref<INode[]>;
-  links?: Ref<ILink[]>;
+  nodes?: Ref<UnwrapRef<INode>[]>;
+  links?: Ref<UnwrapRef<ILink>[]>;
+  checkLinkable?: (link: ILink) => boolean;
 }
 export interface GraphTransform {
   position: Vec2;
   scale: number;
 }
 
-export function defineGraph({ nodes = ref([]), links = ref([]) }: UseGraphOptions) {
+export function defineGraph(options?: UseGraphOptions) {
+  const { nodes = ref([]), links = ref([]), checkLinkable = () => true } = options || {};
   const transform = ref({ position: [0, 0], scale: 1 } as { position: Vec2; scale: number });
-  provide(injectKeys.graphTransform, transform);
-  provide(injectKeys.nodes, nodes);
-  provide(injectKeys.links, links);
-  return { links, nodes, graphTransform: transform };
+  provideLocal(injectKeys.graphTransform, transform);
+  provideLocal(injectKeys.nodes, nodes);
+  provideLocal(injectKeys.links, links);
+  const { isLinking, isLinkable } = useLinksManager({ checkLinkable });
+  return { links, nodes, graphTransform: transform, isLinking, isLinkable };
 }
 
 export function screenToGraphPosition(screenPosition: Vec2, graphTransform: { position: Vec2; scale: number }) {

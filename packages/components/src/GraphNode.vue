@@ -12,12 +12,9 @@
 <script setup lang="ts">
 import { defineNode } from "@vue-reagraph/composables";
 import { ref } from "vue";
-const props = defineProps<{
-  position: [number, number];
-}>();
-const position = ref(props.position);
+
 const title = ref<HTMLDivElement | null>(null);
-defineNode({ position, handler: title });
+defineNode({ handler: title });
 </script>
 
 <style scoped>
