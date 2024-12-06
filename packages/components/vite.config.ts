@@ -14,11 +14,10 @@ export default defineConfig({
       fileName: "vue-reagraph-components",
     },
     rollupOptions: {
-      external: ["vue", "@vue-reagraph/composables"],
+      external: ["vue"],
       output: {
         globals: {
           vue: "Vue",
-          "@vue-reagraph/composables": "VueReagraphComposables",
         },
       },
     },
