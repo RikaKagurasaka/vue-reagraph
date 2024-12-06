@@ -10,7 +10,9 @@ Vue ReaGraph is a Vue 3 library for building node-based graph interfaces. It pro
 
 ## Installation
 
-(Not released yet)
+```bash
+npm install @vue-reagraph/composables @vue-reagraph/components
+```
 
 ## Usage
 
@@ -40,4 +42,4 @@ defineGraph({});
 </script>
 ```
 
-For more details, see the documentation (not ready yet).
+For more details, see the documentation (not ready yet) or the [examples](./examples).
