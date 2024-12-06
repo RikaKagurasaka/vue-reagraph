@@ -2,17 +2,20 @@
   "name": "examples",
   "version": "0.0.0",
   "type": "module",
+  "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint --fix"
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
   },
   "dependencies": {
     "@unocss/reset": "catalog:",
     "@vue-reagraph/components": "workspace:",
     "@vue-reagraph/composables": "workspace:",
-    "vue": "catalog:"
+    "vue": "catalog:",
+    "@vueuse/core": "catalog:"
   },
   "devDependencies": {
     "@tools/uno-config": "workspace:",

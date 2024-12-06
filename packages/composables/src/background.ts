@@ -1,23 +1,20 @@
 import { BackgroundGridFunction, presetBackgroundLineGrid } from "./styles";
-import { useCurrentElement, useEventListener } from "@vueuse/core";
+import { useCurrentElement, useEventListener, watchImmediate } from "@vueuse/core";
 import { useElementStyle } from "@vueuse/motion";
-import { MaybeRef, MaybeRefOrGetter, watch, toValue, ref, inject, Ref } from "vue";
-import { GraphTransform, screenToGraphPosition, Vec2 } from "./graph";
-import injectKeys from "./injectKeys";
+import { MaybeRef, toValue, ref } from "vue";
+import { GraphTransform, screenToGraphPosition, useGraph, Vec2 } from "./graph";
 
 export interface UseBackgroundOptions {
-  /** The tranlate and scale of the graph view */
-  graphTransform?: Ref<GraphTransform>;
   /** The function that generates the background style, defaulting to `presetBackgroundLineGrid({})` */
   backgroundGridPreset?: BackgroundGridFunction;
   /** The element to apply the background style and listen for dragging events */
   backgroundElement?: MaybeRef<HTMLElement>;
   /** Whether to auto bind the background style to the element style. If `false`, you need to manually apply the style to the element, which enables you to modify the style before applying it. */
-  backgroundStyleBinding?: MaybeRefOrGetter<boolean>;
+  backgroundStyleBinding?: MaybeRef<boolean>;
   /** Whether to disable dragging the view. Default is `false`. The `ref` will be returned to allow you to change it later. */
-  disableDragging?: MaybeRefOrGetter<boolean>;
+  disableDragging?: MaybeRef<boolean>;
   /** Whether to disable scaling the view. Default is `false`. The `ref` will be returned to allow you to change it later. */
-  disableScaling?: MaybeRefOrGetter<boolean>;
+  disableScaling?: MaybeRef<boolean>;
   /** The scaling function to apply to the view when scrolling.   */
   scalingFunction?: (event: WheelEvent, graphTransform: GraphTransform) => GraphTransform;
 }
@@ -33,22 +30,20 @@ export function defaultScalingFunction({ factor = 1e-3 }: { factor?: number }) {
   };
 }
 
-export function useBackground({ backgroundGridPreset = presetBackgroundLineGrid({}), backgroundElement = useCurrentElement(), backgroundStyleBinding = true, graphTransform = inject(injectKeys.graphTransform), disableDragging = ref(false), disableScaling = ref(false), scalingFunction = defaultScalingFunction({}) }: UseBackgroundOptions) {
-  if (!graphTransform?.value) {
+export function useBackground(options?: UseBackgroundOptions) {
+  const { backgroundGridPreset = presetBackgroundLineGrid({}), backgroundElement = useCurrentElement<HTMLElement>(), backgroundStyleBinding = true, disableDragging = ref(false), disableScaling = ref(false), scalingFunction = defaultScalingFunction({}) } = options || {};
+  const { graphTransform } = useGraph()!;
+  if (!graphTransform) {
     throw new Error("useBackground requires graphTransform to be provided. You should either provide it manually or call `useBackground` inside a component whose parent has `defineGraph` called.");
   }
   const isDragging = ref(false);
   const backgroundStyle = backgroundGridPreset(graphTransform, isDragging);
   const { style } = useElementStyle(backgroundElement);
-  watch(
-    backgroundStyle,
-    (value) => {
-      if (toValue(backgroundStyleBinding)) {
-        Object.assign(style, value);
-      }
-    },
-    { immediate: true }
-  );
+  watchImmediate(backgroundStyle, (value) => {
+    if (toValue(backgroundStyleBinding)) {
+      Object.assign(style, value);
+    }
+  });
   const lastMousePosition = ref([0, 0] as Vec2);
   useEventListener(backgroundElement, "mousedown", (event) => {
     if (event.button === 0 && !toValue(disableDragging) && event.target === toValue(backgroundElement)) {

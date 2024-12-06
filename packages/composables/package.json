@@ -1,8 +1,41 @@
 {
   "name": "@vue-reagraph/composables",
   "version": "0.1.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "private": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RikaKagurasaka/vue-reagraph.git",
+    "directory": "packages/composables"
+  },
+  "homepage": "https://github.com/RikaKagurasaka/vue-reagraph#readme",
+  "bugs": {
+    "url": "https://github.com/RikaKagurasaka/vue-reagraph/issues"
+  },
+  "keywords": [
+    "vue",
+    "reagraph",
+    "composables",
+    "typescript",
+    "vue3",
+    "graph",
+    "editor",
+    "visualization",
+    "flow",
+    "diagram",
+    "node",
+    "link"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
   "dependencies": {
     "@vueuse/core": "catalog:",
     "@vueuse/motion": "catalog:",
@@ -14,11 +47,17 @@
   "devDependencies": {
     "@tools/eslint-config": "workspace:",
     "@tools/ts-config": "workspace:",
-    "csstype": "catalog:"
+    "csstype": "catalog:",
+    "rollup": "catalog:",
+    "@rollup/plugin-typescript": "catalog:",
+    "typescript": "catalog:",
+    "tslib": "catalog:  "
   },
   "scripts": {
-    "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx,md,json,vue}\"",
-    "dev": "tsc -w"
+    "build": "rollup --config rollup.config.js",
+    "dev": "rollup --config rollup.config.js --watch",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
   }
 }

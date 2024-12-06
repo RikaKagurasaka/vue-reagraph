@@ -1,13 +1,25 @@
-import { InjectionKey, Ref, UnwrapRef } from "vue";
-import { GraphTransform } from "./graph";
+import { InjectionKey } from "vue";
+import { UseGraphRawReturn } from "./graph";
 import { INode } from "./node";
-import { ILink } from "./link";
+import { UseLinkReturn, UseLinksManagerReturn } from "./link";
 import { IPort } from "./port";
+import { injectLocal, provideLocal } from "@vueuse/core";
 
 export default {
-  graphTransform: Symbol("graphTransform") as InjectionKey<Ref<GraphTransform>>,
+  graphRaw: Symbol("graphRaw") as InjectionKey<UseGraphRawReturn>,
+  graph: Symbol("graph") as InjectionKey<UseGraphRawReturn>,
+  linksManager: Symbol("linksManager") as InjectionKey<UseLinksManagerReturn>,
+  link: Symbol("link") as InjectionKey<UseLinkReturn>,
   node: Symbol("node") as InjectionKey<INode>,
-  nodes: Symbol("nodes") as InjectionKey<Ref<UnwrapRef<INode>[]>>,
-  links: Symbol("links") as InjectionKey<Ref<UnwrapRef<ILink>[]>>,
-  ports: Symbol("ports") as InjectionKey<Ref<UnwrapRef<IPort>[]>>,
+  port: Symbol("port") as InjectionKey<IPort>,
 };
+
+export function createLocalInjectionState<TArgs extends unknown[], TReturn, TInjectionKey extends InjectionKey<TReturn>>(setup: (...args: TArgs) => TReturn, injectionKey: TInjectionKey) {
+  const useProvidingState = (...args: TArgs) => {
+    const state = setup(...args);
+    provideLocal<TReturn>(injectionKey, state);
+    return state;
+  };
+  const useInjectedState = () => injectLocal<TReturn>(injectionKey);
+  return [useProvidingState, useInjectedState] as const;
+}

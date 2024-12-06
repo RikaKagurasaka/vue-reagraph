@@ -1,14 +1,14 @@
-import { computed, ComputedRef, MaybeRefOrGetter, toValue } from "vue";
+import { computed, ComputedRef, MaybeRef, toValue } from "vue";
 import { Property } from "csstype";
-export type BackgroundGridFunction = (transform: MaybeRefOrGetter<{ position: [number, number]; scale: number }>, isDragging: MaybeRefOrGetter<boolean>) => ComputedRef<{ backgroundImage: string; backgroundSize: string; backgroundPosition: string }>;
+export type BackgroundGridFunction = (transform: MaybeRef<{ position: [number, number]; scale: number }>, isDragging: MaybeRef<boolean>) => ComputedRef<{ backgroundImage: string; backgroundSize: string; backgroundPosition: string }>;
 
 type CommonStyleConfig = {
-  cellSize?: MaybeRefOrGetter<number>;
-  backgroundColor?: MaybeRefOrGetter<string>;
-  color?: MaybeRefOrGetter<string>;
-  theme?: MaybeRefOrGetter<"dark" | "light">;
-  cursorNormal?: MaybeRefOrGetter<Property.Cursor>;
-  cursorGrab?: MaybeRefOrGetter<Property.Cursor | boolean>;
+  cellSize?: MaybeRef<number>;
+  backgroundColor?: MaybeRef<string>;
+  color?: MaybeRef<string>;
+  theme?: MaybeRef<"dark" | "light">;
+  cursorNormal?: MaybeRef<Property.Cursor>;
+  cursorGrab?: MaybeRef<Property.Cursor | boolean>;
 };
 
 const themes = {
@@ -23,12 +23,12 @@ const themes = {
 };
 const defaultTheme = "light";
 
-export function presetBackgroundLineGrid({ cellSize = 50, backgroundColor, color, theme = defaultTheme, cursorNormal, cursorGrab = true, thickness = 1 }: CommonStyleConfig & { thickness?: MaybeRefOrGetter<number> }) {
+export function presetBackgroundLineGrid({ cellSize = 50, backgroundColor, color, theme = defaultTheme, cursorNormal, cursorGrab = true, thickness = 1 }: CommonStyleConfig & { thickness?: MaybeRef<number> }) {
   backgroundColor = computed(() => toValue(backgroundColor) || themes[toValue(theme)].backgroundColor);
   color = computed(() => toValue(color) || themes[toValue(theme)].color);
   cursorNormal = computed(() => toValue(cursorNormal) || "default");
   const newCursorGrab = computed(() => (toValue(cursorGrab) === true ? "grabbing" : toValue(cursorGrab) || "default"));
-  return function (transform: MaybeRefOrGetter<{ position: [number, number]; scale: number }>, isDragging: MaybeRefOrGetter<boolean>) {
+  return function (transform: MaybeRef<{ position: [number, number]; scale: number }>, isDragging: MaybeRef<boolean>) {
     return computed(() => {
       const cellSize_ = toValue(cellSize) / toValue(transform).scale;
       return {
@@ -43,13 +43,13 @@ export function presetBackgroundLineGrid({ cellSize = 50, backgroundColor, color
   } as BackgroundGridFunction;
 }
 
-export function presetBackgroundDotGrid({ cellSize = 50, backgroundColor, color, theme = defaultTheme, cursorNormal, cursorGrab = true, radius = 2 }: CommonStyleConfig & { radius?: MaybeRefOrGetter<number> }) {
+export function presetBackgroundDotGrid({ cellSize = 50, backgroundColor, color, theme = defaultTheme, cursorNormal, cursorGrab = true, radius = 2 }: CommonStyleConfig & { radius?: MaybeRef<number> }) {
   backgroundColor = computed(() => toValue(backgroundColor) || themes[toValue(theme)].backgroundColor);
   color = computed(() => toValue(color) || themes[toValue(theme)].color);
   cursorNormal = computed(() => toValue(cursorNormal) || "default");
   const newCursorGrab = computed(() => (toValue(cursorGrab) === true ? "grabbing" : toValue(cursorGrab) || "default"));
 
-  return function (transform: MaybeRefOrGetter<{ position: [number, number]; scale: number }>, isDragging: MaybeRefOrGetter<boolean>) {
+  return function (transform: MaybeRef<{ position: [number, number]; scale: number }>, isDragging: MaybeRef<boolean>) {
     return computed(() => {
       const cellSize_ = toValue(cellSize) / toValue(transform).scale;
       return {

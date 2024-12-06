@@ -1,23 +1,24 @@
 <template>
-  <div class="reagraph__port" :class="[`reagraph__port-${id}`, props.classes]" :style="style"></div>
+  <div class="reagraph__port" :class="[`reagraph__port-${id}`, props.classes]" :style="styleBinding ? style : undefined"></div>
 </template>
 
 <script setup lang="ts">
-import { definePort, usePortStyle } from "@vue-reagraph/composables";
+import { definePort, useGraph, usePortStyle } from "@vue-reagraph/composables";
 import { computed } from "vue";
 const props = withDefaults(
   defineProps<{
     id: string;
-    size?: number | string;
+    size?: number;
     color?: string;
     borderColor?: string;
     borderWidth?: string;
     borderStyle?: string;
     classes?: string | string[];
     styleBinding?: boolean;
-    side?: "left" | "right"; 
+    side?: "in" | "out";
+    linkingScale?: number;
   }>(),
-  { 
+  {
     size: 8,
     color: "#ee0000",
     borderColor: "#777",
@@ -25,13 +26,15 @@ const props = withDefaults(
     borderStyle: "solid",
     classes: "",
     styleBinding: true,
+    linkingScale: 1.5,
   }
 );
-
-const isLeft = computed(() => props.id.includes("left") || props.id.includes("in"));
-const isRight = computed(() => props.id.includes("right") || props.id.includes("out"));
-const side = computed(() => props.side || (isLeft.value ? "left" : isRight.value ? "right" : undefined));
-const style = usePortStyle({ ...props, side });
+const { isLinking } = useGraph()!;
+const isIn = computed(() => props.id.includes("-in"));
+const isOut = computed(() => props.id.includes("-out"));
+const side = computed(() => props.side || (isIn.value ? "in" : isOut.value ? "out" : undefined));
+const linkingScale = computed(() => ({ scale: isLinking.value ? props.linkingScale : 1 }));
+const style = usePortStyle({ ...props, side, size: computed(() => props.size * linkingScale.value.scale) });
 definePort({ id: props.id });
 </script>
 

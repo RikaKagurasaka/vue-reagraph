@@ -5,7 +5,7 @@ packages:
 catalog:
   "prettier": ^3.3.3
   "turbo": ^2.3.3
-  "typescript": ^5.5.4
+  "typescript": ^5.7.2
   "@eslint/js": "^9.16.0"
   "typescript-eslint": "^8.17.0"
   "eslint-plugin-vue": "^9.32.0"
@@ -22,3 +22,7 @@ catalog:
   "vite-plugin-dts": "^4.3.0"
   "unocss": "^0.65.1"
   "@unocss/reset": "^0.65.1"
+  "eslint-plugin-unused-imports": "^4.1.4"
+  "rollup": "^4.23.0"
+  "@rollup/plugin-typescript": "12.1.1"
+  "tslib": "^2.8.1"

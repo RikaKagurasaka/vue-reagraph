@@ -1,82 +1,74 @@
-import { injectLocal, provideLocal, toReactive, useCurrentElement, useEventListener } from "@vueuse/core";
-import { CSSProperties, isRef, MaybeRef, MaybeRefOrGetter, onBeforeUnmount, onMounted, provide, Ref, ref, toValue, UnwrapRef } from "vue";
+import { useCurrentElement, useEventListener } from "@vueuse/core";
+import { CSSProperties, isRef, MaybeRef, onBeforeUnmount, onMounted, Ref, ref, toValue, UnwrapRef } from "vue";
 import { v4 } from "uuid";
-import injectKeys from "./injectKeys";
-import { Vec2 } from "./graph";
+import { useGraph, Vec2 } from "./graph";
 import { Property } from "csstype";
 import { useHandlerStyle, useNodeStyle } from "./styles";
 import { IPort } from "./port";
+import injectKeys, { createLocalInjectionState } from "./injectKeys";
 
 export interface INode {
-  uuid: MaybeRefOrGetter<string>;
+  uuid: MaybeRef<string>;
   position: Ref<[number, number]>;
-  el: MaybeRefOrGetter<HTMLElement | null>;
+  el: MaybeRef<HTMLElement | null>;
   isDragging: Ref<boolean>;
-  styles: Ref<CSSProperties>;
-  handlerStyles: Ref<CSSProperties>;
+  style: Ref<CSSProperties>;
+  handlerStyle: Ref<CSSProperties>;
   ports: Ref<UnwrapRef<IPort>[]>;
 }
 
 export interface DefineNodeOptions {
-  uuid?: MaybeRefOrGetter<string>;
+  uuid?: MaybeRef<string>;
   position?: MaybeRef<[number, number]>;
-  el?: MaybeRefOrGetter<HTMLElement | null>;
-  handler?: MaybeRefOrGetter<HTMLElement | null>;
-  styleBinding?: MaybeRefOrGetter<boolean>;
-  cursorNormal?: MaybeRefOrGetter<Property.Cursor>;
-  cursorGrab?: MaybeRefOrGetter<Property.Cursor | boolean>;
+  el?: MaybeRef<HTMLElement | null>;
+  handler?: MaybeRef<HTMLElement | null>;
+  styleBinding?: MaybeRef<boolean>;
+  cursorNormal?: MaybeRef<Property.Cursor>;
+  cursorGrab?: MaybeRef<Property.Cursor | boolean>;
 }
 
-export function defineNode({ uuid = ref(v4()), position: posiiton_ = ref([0, 0]), el = useCurrentElement(), handler = el, styleBinding = true, cursorNormal, cursorGrab = true }: DefineNodeOptions) {
+function _defineNode(options?: DefineNodeOptions) {
+  const { uuid = ref(v4()), position: posiiton_ = ref([0, 0] as Vec2), el = useCurrentElement<HTMLElement>(), handler = el, styleBinding = false, cursorNormal, cursorGrab = true } = options ?? {};
   const position = isRef(posiiton_) ? posiiton_ : ref(toValue(posiiton_));
-  const graphTransform = injectLocal(injectKeys.graphTransform);
-  if (!graphTransform) {
-    throw new Error("`defineNode` requires `defineGraph` to be called at a parent component.");
-  }
-  const nodes = injectLocal(injectKeys.nodes);
-  const links = injectLocal(injectKeys.links);
+  const { graphTransform, nodes, addNode, removeNode, links, removeLink, findLinks } = useGraph()!;
   const ports = ref([]) as Ref<UnwrapRef<IPort>[]>;
-  provideLocal(injectKeys.ports, ports);
-  if (!nodes) {
-    console.error("`defineNode` requires `defineGraph` to be called at a parent component.");
-  }
-  if (!links) {
-    console.error("`defineNode` requires `defineGraph` to be called at a parent component.");
-  }
 
   const { isDragging } = useDraggableNode({ position, handler, graphTransform });
 
-  const styles = useNodeStyle({ el, position, styleBinding, graphTransform });
-  const handlerStyles = useHandlerStyle({ handler, isDragging, cursorNormal, cursorGrab, styleBinding });
+  const style = useNodeStyle({ el, position, styleBinding, graphTransform });
+  const handlerStyle = useHandlerStyle({ handler, isDragging, cursorNormal, cursorGrab, styleBinding });
 
-  const node = { uuid, position, el, isDragging, styles, handlerStyles, ports };
+  const node = { uuid, position, el, isDragging, style, handlerStyle, ports };
   onMounted(() => {
     if (nodes) {
-      nodes.value = [...nodes.value, toReactive(node)];
+      addNode(node);
     }
   });
   onBeforeUnmount(() => {
     if (nodes) {
       const index = nodes.value.findIndex((n) => toValue(n.uuid) === toValue(node.uuid));
       if (index !== -1) {
-        nodes.value.splice(index, 1);
+        removeNode(toValue(node.uuid));
       }
     }
+    if (links) {
+      findLinks({ sourceNodeId: toValue(node.uuid) }).forEach((l) => removeLink(l));
+      findLinks({ targetNodeId: toValue(node.uuid) }).forEach((l) => removeLink(l));
+    }
   });
-  provide(injectKeys.node, node);
   return node;
 }
+export const [defineNode, useNode] = createLocalInjectionState(_defineNode, injectKeys.node);
 
 interface UseDraggableNodeOptions {
   position: Ref<[number, number]>;
-  handler: MaybeRefOrGetter<HTMLElement | null>;
+  handler: MaybeRef<HTMLElement | null>;
   graphTransform: Ref<{ position: [number, number]; scale: number }>;
 }
 
 function useDraggableNode({ position, handler, graphTransform }: UseDraggableNodeOptions) {
   const isDragging = ref(false);
   const lastMousePosition = ref<Vec2>([0, 0]);
-
   useEventListener(handler, "mousedown", (event) => {
     isDragging.value = true;
     lastMousePosition.value = [event.clientX, event.clientY];
@@ -90,7 +82,8 @@ function useDraggableNode({ position, handler, graphTransform }: UseDraggableNod
     }
   });
 
-  useEventListener(handler, "mouseup", () => {
+  useEventListener("mouseup", () => {
+    lastMousePosition.value = [0, 0];
     isDragging.value = false;
   });
 
